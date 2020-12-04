@@ -37,10 +37,8 @@ func validator_one(m Meta) bool {
 }
 
 func validator_two(m Meta) bool {
-	p1 := m.min - 1
-	p2 := m.max - 1
-	return ((string(m.password[p1]) == m.char && string(m.password[p2]) != m.char) ||
-		(string(m.password[p1]) != m.char && string(m.password[p2]) == m.char))
+	return ((string(m.password[m.min - 1]) == m.char && string(m.password[m.max - 1]) != m.char) ||
+		(string(m.password[m.min - 1]) != m.char && string(m.password[m.max - 1]) == m.char))
 }
 
 func process_chunk(fn validator, lines []Meta, c chan int) {
