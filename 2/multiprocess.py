@@ -1,3 +1,4 @@
+'Just a start at an experiment with the multiprocessing module, however golang showed more promise'
 import datetime
 from collections import namedtuple
 from multiprocessing.pool import ThreadPool
@@ -36,6 +37,6 @@ lines = [l for l in open('passwords.txt')]
 pool = ThreadPool(processes=2)
 
 return_val1 = pool.apply_async(validator_two, (lines[0:500],)).get()
-return_val2 = pool.apply_async(validator_two, (lines[500:999],)).get()
+return_val2 = pool.apply_async(validator_two, (lines[500:1000],)).get()
 
 print(return_val1 + return_val2)

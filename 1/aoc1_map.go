@@ -1,16 +1,17 @@
 package main
+
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
 	"strconv"
 )
 
 func multiply_two_numbers_totaling(val int, list map[int]int) int {
-	for v, _ := range(list) {
+	for v, _ := range list {
 		diff := val - v
 		_, ok := list[diff]
-		if (ok) {
+		if ok {
 			return diff * v
 		}
 	}
@@ -18,23 +19,23 @@ func multiply_two_numbers_totaling(val int, list map[int]int) int {
 }
 
 func multiply_three_numbers_totaling(val int, list map[int]int) int {
-	for v, _ := range(list){
+	for v, _ := range list {
 		diff := val - v
 		match := multiply_two_numbers_totaling(diff, list)
-		if (match != 0){
+		if match != 0 {
 			return v * match
 		}
 	}
 	return 0
 }
 
-func main(){
+func main() {
 	f, _ := os.Open("expenses.txt")
 	defer f.Close()
 
 	list := make(map[int]int)
-    scanner := bufio.NewScanner(f)
-    for scanner.Scan(){
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
 		val, _ := strconv.Atoi(scanner.Text())
 		list[val] = 0
 	}

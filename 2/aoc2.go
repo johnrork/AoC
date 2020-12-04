@@ -1,16 +1,17 @@
 package main
+
 import (
-	"os"
-	"fmt"
 	"bufio"
-	"strings"
+	"fmt"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type Meta struct {
-	min int
-	max int
-	char string
+	min      int
+	max      int
+	char     string
 	password string
 }
 
@@ -23,35 +24,31 @@ func make_meta(line string) Meta {
 	return Meta{min, max, numbers_and_char[1], policy_and_password[1]}
 }
 
-func validator_one(line string) bool {
-	m := make_meta(line)
+func validator_one(m Meta) bool {
 	count := 0
-	for _, c := range(m.password) {
-		if (string(c) == m.char){
+	for _, c := range m.password {
+		if string(c) == m.char {
 			count++
 		}
 	}
-	return m.min <= count  && count <= m.max
+	return m.min <= count && count <= m.max
 }
 
-func validator_two(line string) bool {
-	m := make_meta(line)
-	p1 := m.min -1
-	p2 := m.max -1
-	return ((string(m.password[p1]) == m.char && string(m.password[p2]) != m.char) ||
-	        (string(m.password[p1]) != m.char && string(m.password[p2]) == m.char))
+func validator_two(m Meta) bool {
+	return ((string(m.password[m.min - 1]) == m.char && string(m.password[m.max - 1]) != m.char) ||
+		(string(m.password[m.min - 1]) != m.char && string(m.password[m.max - 1]) == m.char))
 }
 
 func main() {
 	total1 := 0
 	total2 := 0
 	scanner := bufio.NewScanner(os.Stdin)
-    for scanner.Scan() {
-		v := scanner.Text()
-		if (validator_one(v)){
+	for scanner.Scan() {
+		m := make_meta(scanner.Text())
+		if validator_one(m) {
 			total1++
 		}
-		if (validator_two(v)){
+		if validator_two(m) {
 			total2++
 		}
 	}

@@ -1,16 +1,17 @@
 package main
+
 import (
-	"os"
-	"fmt"
 	"bufio"
-	"strings"
+	"fmt"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type Meta struct {
-	min int
-	max int
-	char string
+	min      int
+	max      int
+	char     string
 	password string
 }
 
@@ -27,8 +28,8 @@ func make_meta(line string) Meta {
 
 func validator_one(m Meta) bool {
 	count := 0
-	for _, c := range(m.password) {
-		if (string(c) == m.char){
+	for _, c := range m.password {
+		if string(c) == m.char {
 			count++
 		}
 	}
@@ -36,30 +37,31 @@ func validator_one(m Meta) bool {
 }
 
 func validator_two(m Meta) bool {
-	p1 := m.min -1
-	p2 := m.max -1
+	p1 := m.min - 1
+	p2 := m.max - 1
 	return ((string(m.password[p1]) == m.char && string(m.password[p2]) != m.char) ||
-	        (string(m.password[p1]) != m.char && string(m.password[p2]) == m.char))
+		(string(m.password[p1]) != m.char && string(m.password[p2]) == m.char))
 }
 
-func process_chunk(fn validator, lines []Meta, c chan int){
+func process_chunk(fn validator, lines []Meta, c chan int) {
 	total := 0
-	for _, line := range(lines){
-		if (fn(line)){
+	for _, line := range lines {
+		if fn(line) {
 			total++
 		}
 	}
 	c <- total
 }
 
-func chained_process_chunk(fn1 validator, fn2 validator, lines []Meta, c1 chan int, c2 chan int){
+// An experiment to see if it's faster to run both validators while iterating through chunks
+func chained_process_chunk(fn1 validator, fn2 validator, lines []Meta, c1 chan int, c2 chan int) {
 	t1 := 0
 	t2 := 0
-	for _, line := range(lines){
-		if (fn1(line)){
+	for _, line := range lines {
+		if fn1(line) {
 			t1++
 		}
-		if fn2(line){
+		if fn2(line) {
 			t2++
 		}
 	}
@@ -74,35 +76,14 @@ func main() {
 	var lines []Meta
 	f, _ := os.Open("passwords.txt")
 	scanner := bufio.NewScanner(f)
-    for scanner.Scan() {
+	for scanner.Scan() {
 		m := make_meta(scanner.Text())
 		lines = append(lines, m)
 	}
 
-	// go chained_process_chunk(validator_one, validator_two, lines[0:250], c1, c2)
-	// go chained_process_chunk(validator_one, validator_two, lines[250:500], c1, c2)
-	// go chained_process_chunk(validator_one, validator_two, lines[500:750], c1, c2)
-	// go chained_process_chunk(validator_one, validator_two, lines[750:1000], c1, c2)
-	// go process_chunk(validator_one, lines[0:250], c1)
-	// go process_chunk(validator_one, lines[250:500], c1)
-	// go process_chunk(validator_one, lines[500:750], c1)
-	// go process_chunk(validator_one, lines[750:1000], c1)
+	go process_chunk(validator_one, lines, c1)
+	go process_chunk(validator_two, lines, c2)
 
-	// go process_chunk(validator_two, lines[0:250], c2)
-	// go process_chunk(validator_two, lines[250:500], c2)
-	// go process_chunk(validator_two, lines[500:750], c2)
-	// go process_chunk(validator_two, lines[750:1000], c2)
-
-	total1 := <- c1
-	total1 += <- c1
-	total1 += <- c1
-	total1 += <- c1
-
-	total2 := <- c2
-	total2 += <- c2
-	total2 += <- c2
-	total2 += <- c2
-
-	fmt.Println("Part 1:", total1)
-	fmt.Println("Part 2:", total2)
+	fmt.Println("Part 1:", <-c1)
+	fmt.Println("Part 2:", <-c2)
 }
