@@ -1,15 +1,9 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 def read_file_into_line_groups(file_path):
-    groups = []
-    last_idx = 0
     with open(file_path) as f:
-        lines = f.readlines()
-    for idx in [i for i, v in enumerate(lines) if v == '\n'] + [len(lines)]:
-        groups.append([l.strip() for l in lines[last_idx:idx]])
-        last_idx = idx + 1
-    return groups
+        return [[ln for ln in grp.split('\n') if ln] for grp in f.read().split('\n\n')]
 
 
 pt1, pt2 = (0, 0)
